@@ -1,4 +1,4 @@
-package com.flab.fpay.domain.common.response;
+package com.flab.fpay.domain.common.dto.response;
 
 public class SuccessResponse<T> {
     private final T payload;

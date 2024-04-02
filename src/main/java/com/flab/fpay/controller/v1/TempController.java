@@ -1,7 +1,7 @@
 package com.flab.fpay.controller.v1;
 
 import com.flab.fpay.domain.common.ErrorCode;
-import com.flab.fpay.domain.common.response.SuccessResponse;
+import com.flab.fpay.domain.common.dto.response.SuccessResponse;
 import com.flab.fpay.exception.ApiException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;

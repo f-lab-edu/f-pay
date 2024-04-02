@@ -1,7 +1,7 @@
 package com.flab.fpay.exception;
 
 import com.flab.fpay.domain.common.ErrorCode;
-import com.flab.fpay.domain.common.response.FailResponse;
+import com.flab.fpay.domain.common.dto.response.FailResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
