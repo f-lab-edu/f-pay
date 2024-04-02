@@ -1,0 +1,10 @@
+spring:
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: none
+  datasource:
+    username: root
+    password: password
+    url: jdbc:mysql://localhost:3306/fpay
+    driver-class-name: com.mysql.cj.jdbc.Driver
