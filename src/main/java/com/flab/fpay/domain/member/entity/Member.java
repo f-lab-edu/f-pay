@@ -1,6 +1,7 @@
 package com.flab.fpay.domain.member.entity;
 
 import com.flab.fpay.domain.common.entity.BaseEntity;
+import com.flab.fpay.domain.member.enums.MemberType;
 import jakarta.persistence.*;
 
 @Entity
@@ -18,7 +19,8 @@ public class Member extends BaseEntity {
     private String password;
 
     @Column(name = "member_type")
-    private String memberType;
+    @Enumerated(EnumType.STRING)
+    private MemberType memberType;
 
     @Column(name = "balance")
     private int balance;
