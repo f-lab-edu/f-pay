@@ -8,7 +8,8 @@ import jakarta.persistence.*;
 public class Member extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Column(name = "id")
+    private long id;
 
     @Column(name = "email")
     private String email;
