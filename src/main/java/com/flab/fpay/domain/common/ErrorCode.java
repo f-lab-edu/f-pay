@@ -13,6 +13,9 @@ public enum ErrorCode {
     MEMBER_UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "member unauthorized"),
 
 
+    // member
+    DUPLICATED_EMAIL(HttpStatus.BAD_REQUEST, "duplicated email address"),
+
     private final HttpStatus status;
     private final String message;
 
