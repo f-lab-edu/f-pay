@@ -26,12 +26,12 @@ public class Member extends BaseEntity {
     private int balance;
 
     @Column(name = "is_deleted")
-    private Boolean isDeleted;
+    private boolean isDeleted;
 
     protected Member() {
     }
 
-    public Member(String email, String password, MemberType memberType, int balance, Boolean isDeleted) {
+    private Member(String email, String password, MemberType memberType, int balance, Boolean isDeleted) {
         this.email = email;
         this.password = password;
         this.memberType = memberType;
@@ -39,8 +39,16 @@ public class Member extends BaseEntity {
         this.isDeleted = isDeleted;
     }
 
+    public long getId() {
+        return id;
+    }
+
     public String getEmail() {
         return email;
+    }
+
+    public String getPassword() {
+        return password;
     }
 
     public int getBalance() {
@@ -49,5 +57,49 @@ public class Member extends BaseEntity {
 
     public Boolean getDeleted() {
         return isDeleted;
+    }
+
+    public static MemberBuilder builder() {
+        return new MemberBuilder();
+    }
+
+    public static class MemberBuilder {
+        private String email;
+        private String password;
+        private MemberType memberType;
+        private int balance;
+        private boolean isDeleted;
+
+        private MemberBuilder() {
+        }
+
+        public MemberBuilder email(String email) {
+            this.email = email;
+            return this;
+        }
+
+        public MemberBuilder password(String password) {
+            this.password = password;
+            return this;
+        }
+
+        public MemberBuilder memberType(MemberType memberType) {
+            this.memberType = memberType;
+            return this;
+        }
+
+        public MemberBuilder balance(int balance) {
+            this.balance = balance;
+            return this;
+        }
+
+        public MemberBuilder isDeleted(boolean isDeleted) {
+            this.isDeleted = isDeleted;
+            return this;
+        }
+
+        public Member build() {
+            return new Member(this.email, this.password, this.memberType, this.balance, this.isDeleted);
+        }
     }
 }

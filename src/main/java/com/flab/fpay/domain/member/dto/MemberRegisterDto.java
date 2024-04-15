@@ -1,6 +1,5 @@
 package com.flab.fpay.domain.member.dto;
 
-import com.flab.fpay.domain.member.entity.Member;
 import com.flab.fpay.domain.member.enums.MemberType;
 
 public class MemberRegisterDto {
@@ -24,10 +23,6 @@ public class MemberRegisterDto {
 
     public MemberType getMemberType() {
         return memberType;
-    }
-
-    public static Member toMemberEntity(MemberRegisterDto dto) {
-        return new Member(dto.getEmail(), dto.getPassword(), dto.getMemberType(), 0, false);
     }
 
     public static MemberRegisterDtoBuilder builder() {
