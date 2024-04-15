@@ -27,4 +27,27 @@ public class Member extends BaseEntity {
 
     @Column(name = "is_deleted")
     private Boolean isDeleted;
+
+    protected Member() {
+    }
+
+    public Member(String email, String password, MemberType memberType, int balance, Boolean isDeleted) {
+        this.email = email;
+        this.password = password;
+        this.memberType = memberType;
+        this.balance = balance;
+        this.isDeleted = isDeleted;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public int getBalance() {
+        return balance;
+    }
+
+    public Boolean getDeleted() {
+        return isDeleted;
+    }
 }
