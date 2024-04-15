@@ -1,6 +1,8 @@
 package com.flab.fpay.integration.member.v1;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.flab.fpay.domain.auth.constant.AuthConstant;
+import com.flab.fpay.domain.auth.dto.JwtClaimDto;
 import com.flab.fpay.domain.auth.entity.AuthToken;
 import com.flab.fpay.domain.common.ErrorCode;
 import com.flab.fpay.domain.member.dto.request.SignInRequest;
@@ -10,6 +12,7 @@ import com.flab.fpay.domain.member.enums.MemberType;
 import com.flab.fpay.integration.IntegrationTest;
 import com.flab.fpay.repository.auth.AuthTokenJpaRepository;
 import com.flab.fpay.repository.member.MemberJpaRepository;
+import com.flab.fpay.utils.auth.JwtProvider;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,9 +20,13 @@ import org.springframework.http.MediaType;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.Calendar;
+import java.util.Date;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -40,6 +47,9 @@ public class MemberIntegrationV1Test extends IntegrationTest {
 
     @Autowired
     PasswordEncoder passwordEncoder;
+
+    @Autowired
+    JwtProvider jwtProvider;
 
     @Test
     @DisplayName("회원가입 성공")
@@ -140,7 +150,7 @@ public class MemberIntegrationV1Test extends IntegrationTest {
         String password = "password";
         String deviceId = "deviceId";
 
-        Member savedMember = this.createMember(email, password);
+        Member savedMember = this.createMember(email, password, 0, MemberType.MEMBER);
 
         SignInRequest request = new SignInRequest(email, password, deviceId);
 
@@ -187,7 +197,7 @@ public class MemberIntegrationV1Test extends IntegrationTest {
         String password = "password";
         String deviceId = "deviceId";
 
-        this.createMember(email, password);
+        this.createMember(email, password, 0, MemberType.MEMBER);
 
         SignInRequest request = new SignInRequest(email, "invalid password", deviceId);
 
@@ -209,7 +219,7 @@ public class MemberIntegrationV1Test extends IntegrationTest {
         String password = "password";
         String deviceId = "deviceId";
 
-        this.createMember(email, password);
+        this.createMember(email, password, 0, MemberType.MEMBER);
 
         SignInRequest request = new SignInRequest("invalid@email", password, deviceId);
 
@@ -224,15 +234,106 @@ public class MemberIntegrationV1Test extends IntegrationTest {
                         .isNotFound());
     }
 
-    private Member createMember(String email, String password) {
+    @Test
+    @DisplayName("회원 정보 조회 성공")
+    void getMemberInfoSuccess() throws Exception {
+        // given
+        String email = "test@email";
+        String password = "password";
+        String deviceId = "deviceId";
+
+        Member savedMember = this.createMember(email, password, 0, MemberType.MEMBER);
+        Date issuedAt = new Date();
+
+        JwtClaimDto jwtClaimDto = JwtClaimDto.builder()
+                .memberId(savedMember.getId())
+                .deviceId(deviceId)
+                .issuedAt(issuedAt)
+                .expiredAt(getExpiredAt(issuedAt, 1))
+                .build();
+
+        String accessToken = jwtProvider.createToken(jwtClaimDto);
+
+        // when & then
+        mockMvc.perform(get("/v1/member/" + savedMember.getId())
+                        .header(AuthConstant.AUTHORIZATION_HEADER, AuthConstant.BEARER_PREFIX + accessToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                        .andDo(print())
+                        .andExpect(jsonPath("$.payload.email", is(email)))
+                        .andExpect(jsonPath("$.payload.memberType", is(MemberType.MEMBER.toString())))
+                        .andExpect(jsonPath("$.payload.balance", is(0)))
+                        .andExpect(status()
+                        .isOk());
+    }
+
+    @Test
+    @DisplayName("잘못된 ID로 회원 정보 조회")
+    void getMemberInfoInvalidMemberId() throws Exception {
+        // given
+        String email = "test@email";
+        String password = "password";
+        String deviceId = "deviceId";
+
+        Member savedMember = this.createMember(email, password, 0, MemberType.MEMBER);
+        Date issuedAt = new Date();
+
+        JwtClaimDto jwtClaimDto = JwtClaimDto.builder()
+                .memberId(savedMember.getId())
+                .deviceId(deviceId)
+                .issuedAt(issuedAt)
+                .expiredAt(getExpiredAt(issuedAt, 1))
+                .build();
+
+        String accessToken = jwtProvider.createToken(jwtClaimDto);
+
+        // when & then
+        mockMvc.perform(get("/v1/member/" + (savedMember.getId() + 1))
+                        .header(AuthConstant.AUTHORIZATION_HEADER, AuthConstant.BEARER_PREFIX + accessToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                        .andDo(print())
+                        .andExpect(jsonPath("$.message", is("invalid member request")))
+                        .andExpect(status()
+                        .isBadRequest());
+    }
+
+    @Test
+    @DisplayName("회원 정보 조회 엑세스 토큰 미포함 실패")
+    void getMemberInfoInvalidAccessToken() throws Exception {
+        // given
+        String email = "test@email";
+        String password = "password";
+
+        Member savedMember = this.createMember(email, password, 0, MemberType.MEMBER);
+
+        // when & then
+        mockMvc.perform(get("/v1/member/" + savedMember.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                        .andDo(print())
+                        .andExpect(jsonPath("$.message", is(ErrorCode.INVALID_TOKEN.getMessage())))
+                        .andExpect(status()
+                        .isForbidden());
+    }
+
+    private Member createMember(String email, String password, int balance, MemberType memberType) {
         Member member = Member.builder()
                 .email(email)
                 .password(passwordEncoder.encode(password))
-                .memberType(MemberType.MEMBER)
-                .balance(0)
+                .memberType(memberType)
+                .balance(balance)
                 .isDeleted(false)
                 .build();
 
         return memberRepository.save(member);
+    }
+
+    private Date getExpiredAt(Date issuedAt, int hours) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(issuedAt);
+        calendar.add(Calendar.HOUR_OF_DAY, hours);
+
+        return calendar.getTime();
     }
 }

@@ -3,6 +3,7 @@ package com.flab.fpay.facade.member;
 import com.flab.fpay.domain.common.ErrorCode;
 import com.flab.fpay.domain.member.dto.request.SignInRequest;
 import com.flab.fpay.domain.member.dto.request.SignUpRequest;
+import com.flab.fpay.domain.member.dto.response.MemberDetailResponse;
 import com.flab.fpay.domain.member.dto.response.SignInResponse;
 import com.flab.fpay.domain.member.entity.Member;
 import com.flab.fpay.domain.member.enums.MemberType;
@@ -53,16 +54,7 @@ public class MemberFacadeTest extends FacadeTest {
         String password = "password";
 
         SignUpRequest request = new SignUpRequest(email, password);
-
-        Member member = Member.builder()
-                .email(email)
-                .password(password)
-                .memberType(MemberType.MEMBER)
-                .balance(0)
-                .isDeleted(false)
-                .build();
-
-        memberRepository.save(member);
+        this.createMember(email, password, 0, MemberType.MEMBER);
 
         // when & then
         assertThatThrownBy(() -> memberFacadeService.signUp(request))
@@ -78,15 +70,7 @@ public class MemberFacadeTest extends FacadeTest {
         String password = "password";
         String deviceId = "deviceId";
 
-        Member member = Member.builder()
-                .email(email)
-                .password(passwordEncoder.encode(password))
-                .memberType(MemberType.MEMBER)
-                .balance(0)
-                .isDeleted(false)
-                .build();
-
-        memberRepository.save(member);
+        this.createMember(email, password, 0, MemberType.MEMBER);
 
         // when
         SignInRequest request = new SignInRequest(email, password, deviceId);
@@ -105,15 +89,7 @@ public class MemberFacadeTest extends FacadeTest {
         String password = "password";
         String deviceId = "deviceId";
 
-        Member member = Member.builder()
-                .email(email)
-                .password(passwordEncoder.encode(password))
-                .memberType(MemberType.MEMBER)
-                .balance(0)
-                .isDeleted(false)
-                .build();
-
-        memberRepository.save(member);
+        this.createMember(email, password, 0, MemberType.MEMBER);
 
         SignInRequest request = new SignInRequest(email, "invalid password", deviceId);
 
@@ -131,15 +107,7 @@ public class MemberFacadeTest extends FacadeTest {
         String password = "password";
         String deviceId = "deviceId";
 
-        Member member = Member.builder()
-                .email(email)
-                .password(passwordEncoder.encode(password))
-                .memberType(MemberType.MEMBER)
-                .balance(0)
-                .isDeleted(false)
-                .build();
-
-        memberRepository.save(member);
+        this.createMember(email, password, 0, MemberType.MEMBER);
 
         SignInRequest request = new SignInRequest("invalid@email", password, deviceId);
 
@@ -147,5 +115,50 @@ public class MemberFacadeTest extends FacadeTest {
         assertThatThrownBy(() -> memberFacadeService.signIn(request))
                 .isInstanceOf(ApiException.class)
                 .hasMessage(ErrorCode.MEMBER_NOT_FOUND.getMessage());
+    }
+
+    @Test
+    @DisplayName("회원 정보 조회 성공")
+    public void getMemberInfo() {
+        // given
+        String email = "test@email";
+        String password = "password";
+
+        Member savedMember = this.createMember(email, password, 0, MemberType.MEMBER);
+
+        // when
+        MemberDetailResponse result = memberFacadeService.getMemberById(savedMember.getId());
+
+        // then
+        assertThat(result.getEmail()).isEqualTo(email);
+        assertThat(result.getBalance()).isZero();
+        assertThat(result.getMemberType()).isEqualTo(MemberType.MEMBER);
+    }
+
+    @Test
+    @DisplayName("회원 정보 조회 실패")
+    public void getMemberInfoNotFound() {
+        // given
+        String email = "test@email";
+        String password = "password";
+
+        Member savedMember = this.createMember(email, password, 0, MemberType.MEMBER);
+
+        // when & then
+        assertThatThrownBy(() -> memberFacadeService.getMemberById(savedMember.getId() + 1))
+                .isInstanceOf(ApiException.class)
+                .hasMessage(ErrorCode.MEMBER_NOT_FOUND.getMessage());
+    }
+
+    private Member createMember(String email, String password, int balance, MemberType memberType) {
+        Member member = Member.builder()
+                .email(email)
+                .password(passwordEncoder.encode(password))
+                .memberType(memberType)
+                .balance(balance)
+                .isDeleted(false)
+                .build();
+
+        return memberRepository.save(member);
     }
 }
