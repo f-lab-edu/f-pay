@@ -15,9 +15,6 @@ public enum ErrorCode {
     // auth
     INVALID_TOKEN(HttpStatus.BAD_REQUEST, "invalid token");
 
-    // member
-    DUPLICATED_EMAIL(HttpStatus.BAD_REQUEST, "duplicated email address"),
-
     private final HttpStatus status;
     private final String message;
 
