@@ -17,7 +17,13 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     public void registerMember(MemberRegisterDto memberRegisterDto) {
-        Member member = MemberRegisterDto.toMemberEntity(memberRegisterDto);
+        Member member = Member.builder()
+                .email(memberRegisterDto.getEmail())
+                .password(memberRegisterDto.getPassword())
+                .memberType(memberRegisterDto.getMemberType())
+                .balance(0)
+                .isDeleted(false)
+                .build();
 
         memberJpaRepository.save(member);
     }
