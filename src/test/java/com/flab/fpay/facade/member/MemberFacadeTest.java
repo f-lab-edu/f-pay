@@ -17,7 +17,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 public class MemberFacadeTest extends FacadeTest {
     @Autowired
     MemberFacadeService memberFacadeService;
-
     @Autowired
     MemberJpaRepository memberRepository;
 
@@ -49,7 +48,14 @@ public class MemberFacadeTest extends FacadeTest {
 
         SignUpRequest request = new SignUpRequest(email, password);
 
-        Member member = new Member(email, password, MemberType.MEMBER, 0, false);
+        Member member = Member.builder()
+                .email(email)
+                .password(password)
+                .memberType(MemberType.MEMBER)
+                .balance(0)
+                .isDeleted(false)
+                .build();
+
         memberRepository.save(member);
 
         // when & then
