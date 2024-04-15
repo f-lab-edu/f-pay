@@ -59,6 +59,10 @@ public class Member extends BaseEntity {
         return isDeleted;
     }
 
+    public MemberType getMemberType() {
+        return memberType;
+    }
+
     public static MemberBuilder builder() {
         return new MemberBuilder();
     }

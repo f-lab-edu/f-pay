@@ -7,4 +7,6 @@ public interface MemberService {
     void registerMember(MemberRegisterDto memberRegisterDto);
 
     Member getMemberByEmail(String email);
+
+    Member getMemberById(long memberId);
 }

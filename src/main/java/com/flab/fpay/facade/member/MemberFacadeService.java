@@ -5,6 +5,7 @@ import com.flab.fpay.domain.common.ErrorCode;
 import com.flab.fpay.domain.member.dto.MemberRegisterDto;
 import com.flab.fpay.domain.member.dto.request.SignInRequest;
 import com.flab.fpay.domain.member.dto.request.SignUpRequest;
+import com.flab.fpay.domain.member.dto.response.MemberDetailResponse;
 import com.flab.fpay.domain.member.dto.response.SignInResponse;
 import com.flab.fpay.domain.member.entity.Member;
 import com.flab.fpay.domain.member.enums.MemberType;
@@ -66,6 +67,21 @@ public class MemberFacadeService {
         return SignInResponse.builder()
                 .accessToken(authTokenDto.getAccessToken())
                 .refreshToken(authTokenDto.getRefreshToken())
+                .build();
+    }
+
+    @Transactional(readOnly = true)
+    public MemberDetailResponse getMemberById(long memberId) {
+        Member member = memberService.getMemberById(memberId);
+
+        if(member == null) {
+            throw new ApiException(ErrorCode.MEMBER_NOT_FOUND);
+        }
+
+        return MemberDetailResponse.builder()
+                .email(member.getEmail())
+                .memberType(member.getMemberType())
+                .balance(member.getBalance())
                 .build();
     }
 }

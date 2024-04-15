@@ -8,4 +8,5 @@ import org.springframework.http.ResponseEntity;
 public interface MemberController {
     ResponseEntity<SuccessResponse> signUp(SignUpRequest request);
     ResponseEntity<SuccessResponse> signIn(SignInRequest request);
+    ResponseEntity<SuccessResponse> getMemberInfo(long memberId);
 }

@@ -30,6 +30,11 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     public Member getMemberByEmail(String email) {
-        return memberJpaRepository.findByEmail(email);
+        return memberJpaRepository.findByEmailAndIsDeletedIsFalse(email);
+    }
+
+    @Override
+    public Member getMemberById(long memberId) {
+        return memberJpaRepository.findById(memberId).orElse(null);
     }
 }
