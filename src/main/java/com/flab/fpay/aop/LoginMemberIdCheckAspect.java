@@ -18,12 +18,12 @@ public class LoginMemberIdCheckAspect {
      * 엑세스 토큰에서 추출한 memberId와 실제 요청의 memberId가 일치하는지 검사
      */
     @Before("@annotation(com.flab.fpay.aop.LoginMemberIdCheck) && args(memberId)")
-    public void checkLoginMemberId(final Long memberId) {
+    public void checkLoginMemberId(final long memberId) {
         HttpServletRequest req = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
 
-        Long authMemberId = Long.valueOf(req.getAttribute(AuthConstant.MEMBER_ID_CLAIM_KEY).toString());
+        long authMemberId = Long.parseLong(req.getAttribute(AuthConstant.MEMBER_ID_CLAIM_KEY).toString());
 
-        if (!authMemberId.equals(memberId)) {
+        if (authMemberId != memberId) {
             throw new ApiException(ErrorCode.BAD_REQUEST, "invalid member request");
         }
     }
