@@ -5,7 +5,12 @@ import com.flab.fpay.domain.member.enums.MemberType;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "member")
+@Table(
+        name = "member",
+        indexes = {
+                @Index(name = "uidx_m_email", columnList = "email", unique = true)
+        }
+)
 public class Member extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,5 +31,84 @@ public class Member extends BaseEntity {
     private int balance;
 
     @Column(name = "is_deleted")
-    private Boolean isDeleted;
+    private boolean isDeleted;
+
+    protected Member() {
+    }
+
+    private Member(String email, String password, MemberType memberType, int balance, Boolean isDeleted) {
+        this.email = email;
+        this.password = password;
+        this.memberType = memberType;
+        this.balance = balance;
+        this.isDeleted = isDeleted;
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public int getBalance() {
+        return balance;
+    }
+
+    public Boolean getDeleted() {
+        return isDeleted;
+    }
+
+    public MemberType getMemberType() {
+        return memberType;
+    }
+
+    public static MemberBuilder builder() {
+        return new MemberBuilder();
+    }
+
+    public static class MemberBuilder {
+        private String email;
+        private String password;
+        private MemberType memberType;
+        private int balance;
+        private boolean isDeleted;
+
+        private MemberBuilder() {
+        }
+
+        public MemberBuilder email(String email) {
+            this.email = email;
+            return this;
+        }
+
+        public MemberBuilder password(String password) {
+            this.password = password;
+            return this;
+        }
+
+        public MemberBuilder memberType(MemberType memberType) {
+            this.memberType = memberType;
+            return this;
+        }
+
+        public MemberBuilder balance(int balance) {
+            this.balance = balance;
+            return this;
+        }
+
+        public MemberBuilder isDeleted(boolean isDeleted) {
+            this.isDeleted = isDeleted;
+            return this;
+        }
+
+        public Member build() {
+            return new Member(this.email, this.password, this.memberType, this.balance, this.isDeleted);
+        }
+    }
 }

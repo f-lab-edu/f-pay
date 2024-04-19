@@ -3,3 +3,8 @@ server:
     whitelabel:
       enabled: false
     path: /error
+
+auth:
+  access-token-expired-hours: 1
+  refresh-token-expired-hours: 720
+  jwt-secret-key:
