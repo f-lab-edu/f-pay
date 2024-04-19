@@ -5,7 +5,12 @@ import com.flab.fpay.domain.member.enums.MemberType;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "member")
+@Table(
+        name = "member",
+        indexes = {
+                @Index(name = "uidx_m_email", columnList = "email", unique = true)
+        }
+)
 public class Member extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

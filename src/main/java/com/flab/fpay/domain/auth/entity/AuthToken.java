@@ -6,7 +6,12 @@ import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "auth_token")
+@Table(
+        name = "auth_token",
+        indexes = {
+                @Index(name = "uidx_at_refreshtoken", columnList = "refresh_token", unique = true)
+        }
+)
 public class AuthToken extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
