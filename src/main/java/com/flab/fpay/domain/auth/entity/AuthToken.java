@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 @Table(
         name = "auth_token",
         indexes = {
-                @Index(name = "uidx_at_refreshtoken", columnList = "refresh_token", unique = true)
+                @Index(name = "uidx_at_refreshtokendeviceid", columnList = "refresh_token, device_id", unique = true)
         }
 )
 public class AuthToken extends BaseEntity {
