@@ -10,7 +10,7 @@ import java.util.concurrent.Executor;
 @Configuration
 public class AsyncConfig {
     @Bean(name = "historyThreadPoolExecutor")
-    public Executor eventListenerThreadPoolExecutor(
+    public Executor historyThreadPoolExecutor(
             @Value("${thread-pool.history.size}") int corePoolSize,
             @Value("${thread-pool.history.max-size}") int maxPoolSize,
             @Value("${thread-pool.history.queue-capacity}") int queueCapacity
