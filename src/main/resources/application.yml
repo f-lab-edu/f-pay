@@ -8,3 +8,9 @@ auth:
   access-token-expired-hours: 1
   refresh-token-expired-hours: 720
   jwt-secret-key:
+
+thread-pool:
+  history:
+    size: 3
+    max-size: 30
+    queue-capacity: 100
