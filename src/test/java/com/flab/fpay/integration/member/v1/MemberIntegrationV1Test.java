@@ -12,15 +12,12 @@ import com.flab.fpay.domain.member.enums.MemberType;
 import com.flab.fpay.integration.IntegrationTest;
 import com.flab.fpay.repository.auth.AuthTokenJpaRepository;
 import com.flab.fpay.repository.member.MemberJpaRepository;
-import com.flab.fpay.utils.auth.JwtProvider;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.util.Calendar;
 import java.util.Date;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -44,12 +41,6 @@ public class MemberIntegrationV1Test extends IntegrationTest {
 
     @Autowired
     AuthTokenJpaRepository authTokenJpaRepository;
-
-    @Autowired
-    PasswordEncoder passwordEncoder;
-
-    @Autowired
-    JwtProvider jwtProvider;
 
     @Test
     @DisplayName("회원가입 성공")
@@ -252,7 +243,7 @@ public class MemberIntegrationV1Test extends IntegrationTest {
                 .expiredAt(getExpiredAt(issuedAt, 1))
                 .build();
 
-        String accessToken = jwtProvider.createToken(jwtClaimDto);
+        String accessToken = this.createToken(jwtClaimDto);
 
         // when & then
         mockMvc.perform(get("/v1/member/" + savedMember.getId())
@@ -285,7 +276,7 @@ public class MemberIntegrationV1Test extends IntegrationTest {
                 .expiredAt(getExpiredAt(issuedAt, 1))
                 .build();
 
-        String accessToken = jwtProvider.createToken(jwtClaimDto);
+        String accessToken = this.createToken(jwtClaimDto);
 
         // when & then
         mockMvc.perform(get("/v1/member/" + (savedMember.getId() + 1))
@@ -317,23 +308,4 @@ public class MemberIntegrationV1Test extends IntegrationTest {
                         .isForbidden());
     }
 
-    private Member createMember(String email, String password, int balance, MemberType memberType) {
-        Member member = Member.builder()
-                .email(email)
-                .password(passwordEncoder.encode(password))
-                .memberType(memberType)
-                .balance(balance)
-                .isDeleted(false)
-                .build();
-
-        return memberRepository.save(member);
-    }
-
-    private Date getExpiredAt(Date issuedAt, int hours) {
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(issuedAt);
-        calendar.add(Calendar.HOUR_OF_DAY, hours);
-
-        return calendar.getTime();
-    }
 }

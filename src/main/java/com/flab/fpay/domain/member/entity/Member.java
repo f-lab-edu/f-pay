@@ -68,6 +68,10 @@ public class Member extends BaseEntity {
         return memberType;
     }
 
+    public void setBalance(int balance) {
+        this.balance = balance;
+    }
+
     public static MemberBuilder builder() {
         return new MemberBuilder();
     }

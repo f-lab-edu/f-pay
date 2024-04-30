@@ -9,4 +9,6 @@ public interface MemberService {
     Member getMemberByEmail(String email);
 
     Member getMemberById(long memberId);
+
+    void decreasePaymoney(long memberId, int amount);
 }
