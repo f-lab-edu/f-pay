@@ -73,8 +73,6 @@ public abstract class IntegrationTest {
                 .isDeleted(false)
                 .build();
 
-        System.out.println("integ" + memberRepository);
-
         return memberRepository.saveAndFlush(member);
     }
 
