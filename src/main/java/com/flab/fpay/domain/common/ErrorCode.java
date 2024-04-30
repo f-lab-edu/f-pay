@@ -14,7 +14,15 @@ public enum ErrorCode {
     MEMBER_UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "member unauthorized"),
 
     // auth
-    INVALID_TOKEN(HttpStatus.BAD_REQUEST, "invalid token");
+    INVALID_TOKEN(HttpStatus.BAD_REQUEST, "invalid token"),
+
+    // product
+    INVALID_PRODUCT(HttpStatus.BAD_REQUEST, "invalid product"),
+    OUT_OF_STOCK(HttpStatus.BAD_REQUEST, "product out of stock"),
+
+    // vendor
+    INVALID_VENDOR(HttpStatus.BAD_REQUEST, "invalid vendor status"),
+
 
     private final HttpStatus status;
     private final String message;
