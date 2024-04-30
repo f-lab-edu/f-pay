@@ -5,6 +5,8 @@ import com.flab.fpay.domain.member.entity.Member;
 import com.flab.fpay.repository.member.MemberJpaRepository;
 import com.flab.fpay.service.member.MemberService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class MemberServiceImpl implements MemberService {
@@ -35,6 +37,14 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     public Member getMemberById(long memberId) {
-        return memberJpaRepository.findById(memberId).orElse(null);
+        return memberJpaRepository.findByIdAndIsDeletedIsFalse(memberId);
+    }
+
+    @Transactional(propagation = Propagation.REQUIRED)
+    @Override
+    public void decreasePaymoney(long memberId, int amount) {
+        Member member = memberJpaRepository.findByIdWithPessimisticLock(memberId);
+
+        member.setBalance(member.getBalance() - amount);
     }
 }

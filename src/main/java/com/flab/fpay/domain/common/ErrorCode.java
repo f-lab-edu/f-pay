@@ -23,6 +23,11 @@ public enum ErrorCode {
     // vendor
     INVALID_VENDOR(HttpStatus.BAD_REQUEST, "invalid vendor status"),
 
+    // order
+    INVALID_ORDER(HttpStatus.BAD_REQUEST, "invalid order"),
+
+    // bank
+    BANK_SERVICE_UNAVAILABLE(HttpStatus.SERVICE_UNAVAILABLE, "bank service unavailable");
 
     private final HttpStatus status;
     private final String message;
